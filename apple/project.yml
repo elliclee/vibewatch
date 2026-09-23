@@ -7,7 +7,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    CURRENT_PROJECT_VERSION: 9
+    CURRENT_PROJECT_VERSION: 10
     MARKETING_VERSION: '0.1.0'
     CODE_SIGN_STYLE: Automatic
     VIBEWATCH_BUNDLE_PREFIX: dev.vibewatch

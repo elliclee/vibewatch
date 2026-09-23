@@ -18,7 +18,7 @@
 
 工程唯一来源为 apple/project.yml；原四目标实验配置已合并。预览脚本 scripts/render_phone_widget_preview.swift 使用虚构数据，不等同于系统实机截图。
 
-## Watch 风格排版（下一版）
+## Watch 风格排版（build 10）
 
 小号上下双行，中号双列大数字；采用与 Watch 相同的绿色/蓝色、低额度红色/橙色和分段额度条。中号增加重置时间卡片，小号保留紧凑重置行。浅色使用更深的颜色保证可读性，过期数据置灰并保留文字提示。锁屏矩形复用分段条，圆形保留适合小尺寸的仪表。
 
@@ -28,4 +28,4 @@
 
 ![深色手机小组件](assets/phone-widgets-dark.png)
 
-[查看浅色预览](assets/phone-widgets-light.png)。当前已发布 build 9 尚未包含此次排版优化。
+[查看浅色预览](assets/phone-widgets-light.png)。build 10 已包含此次排版优化。
