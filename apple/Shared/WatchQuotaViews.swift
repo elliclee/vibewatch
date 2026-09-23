@@ -129,17 +129,24 @@ struct RectangularQuotaView: View {
     let bucket: QuotaBucket
     let date: Date
     var unavailable = false
+    var showUsage = false
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 3) {
                 Text(bucket.name).font(.system(size: 11, weight: .semibold)).foregroundStyle(.primary).lineLimit(1)
-                Text("剩余").font(.system(size: 8))
+                if !showUsage { Text("剩余").font(.system(size: 8)) }
                 Spacer(minLength: 0)
-                if snapshot.isStale(at: date) { Text("已过期").foregroundStyle(.orange) }
+                if showUsage {
+                    WidgetUsageSummary(usage: snapshot.usage, date: date)
+                    if snapshot.isStale(at: date) || unavailable || snapshot.ordinaryUsageAllowed == false {
+                        Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange)
+                            .accessibilityLabel(snapshot.isStale(at: date) ? "数据已过期" : unavailable ? "离线缓存" : "普通额度不可用")
+                    }
+                } else if snapshot.isStale(at: date) { Text("已过期").foregroundStyle(.orange) }
                 else if unavailable { Text("缓存").foregroundStyle(.orange) }
                 else if snapshot.ordinaryUsageAllowed == false { Text("不可用").foregroundStyle(.orange) }
                 else { Image(systemName: "clock") }
-                Text(snapshot.collectedDate, style: .time).monospacedDigit()
+                if !showUsage { Text(snapshot.collectedDate, style: .time).monospacedDigit() }
             }.font(.system(size: 9)).foregroundStyle(.secondary)
             if let primary = bucket.primary { row(primary, title: "主", secondary: false) }
             if let secondary = bucket.secondary { row(secondary, title: "次", secondary: true) }
@@ -199,5 +206,23 @@ struct CircularQuotaView: View {
                 }
             }
         }.accessibilityLabel("\(bucket?.name ?? "额度")，\(window?.durationLabel ?? "窗口未知")剩余 \(window?.remaining.map { String(format: "%.0f%%", $0) } ?? "未知")，\(label)")
+    }
+}
+
+/// Account-wide local-session summary, independent of the selected quota bucket.
+struct WidgetUsageSummary: View {
+    let usage: LocalUsage?
+    let date: Date
+    var body: some View {
+        HStack(spacing: 3) {
+            Text(usage?.isCurrent(at: date) == false ? "本机上次" : "本机今日").foregroundStyle(.secondary)
+            Text(usage.map { LocalUsage.compact($0.totalTokens) } ?? "—")
+                .fontWeight(.semibold).monospacedDigit()
+            Text(usage?.partial == true ? "tokens·部分" : "tokens").foregroundStyle(.secondary)
+        }.font(.system(size: 9)).lineLimit(1).minimumScaleFactor(0.65)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(usage.map {
+                "本机" + ($0.isCurrent(at: date) ? "今日" : "上次") + "消耗 \($0.totalTokens) tokens" + ($0.partial ? "，部分记录" : "")
+            } ?? "本机今日 token 用量暂无数据")
     }
 }

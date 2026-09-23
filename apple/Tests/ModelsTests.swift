@@ -16,6 +16,9 @@ final class ModelsTests: XCTestCase {
         XCTAssertFalse(restored.usage!.isCurrent(at: Date(timeIntervalSince1970: 86500)))
         XCTAssertTrue(restored.usage!.isCurrent(at: Date(timeIntervalSince1970: 100)))
         XCTAssertEqual(LocalUsage.compact(18_300_000), "18.3M")
+        let midnight = Date(timeIntervalSince1970: 86500)
+        XCTAssertTrue(snapshot.transitionDates(after: Date(timeIntervalSince1970: 200)).contains(midnight))
+        XCTAssertFalse(snapshot.transitionDates(after: midnight).contains(midnight))
     }
     func example() throws -> QuotaSnapshot {
         let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()

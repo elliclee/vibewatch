@@ -18,12 +18,12 @@ struct PhoneQuotaWidgetContent: View {
                     .font(.system(size: compact ? 14 : 15, weight: .bold))
                 Spacer(minLength: 0)
                 if !compact {
-                    Text("剩余额度").font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary)
+                    WidgetUsageSummary(usage: snapshot?.usage, date: date)
                 }
             }.lineLimit(1).minimumScaleFactor(0.8)
             if let snapshot, let bucket, bucket.displayWindow != nil {
                 if compact {
-                    VStack(spacing: 7) {
+                    VStack(spacing: 4) {
                         if let primary = bucket.primary { smallRow(primary, snapshot: snapshot, secondary: false) }
                         if let secondary = bucket.secondary { smallRow(secondary, snapshot: snapshot, secondary: true) }
                     }.frame(maxHeight: .infinity, alignment: .center)
@@ -34,6 +34,7 @@ struct PhoneQuotaWidgetContent: View {
                         if let secondary = bucket.secondary { column(secondary, snapshot: snapshot, secondary: true) }
                     }.frame(maxHeight: .infinity, alignment: .center)
                 }
+                if compact { WidgetUsageSummary(usage: snapshot.usage, date: date) }
                 HStack(spacing: 4) {
                     Circle().fill(warning(snapshot) ? Color.orange : Color.secondary.opacity(0.5)).frame(width: 4, height: 4)
                     Text(snapshot.isStale(at: date) ? "已过期" : unavailable ? "离线缓存" : snapshot.ordinaryUsageAllowed == false ? "额度不可用" : "采集于")

@@ -13,7 +13,7 @@ struct PhoneQuotaWidgetView: View {
                                   unavailable: entry.unavailable, paired: entry.paired)
             } else if family == .accessoryRectangular {
                 if let snapshot, let bucket {
-                    RectangularQuotaView(snapshot: snapshot, bucket: bucket, date: entry.date, unavailable: entry.unavailable)
+                    RectangularQuotaView(snapshot: snapshot, bucket: bucket, date: entry.date, unavailable: entry.unavailable, showUsage: true)
                 } else {
                     VStack(alignment: .leading) {
                         Text("VibeWatch").font(.headline)

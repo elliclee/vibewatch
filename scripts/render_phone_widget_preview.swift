@@ -4,10 +4,15 @@ import SwiftUI
 
 let previewDate = Date(timeIntervalSince1970: 1790000000)
 func sample(weeklyOnly: Bool = false, stale: Bool = false, low: Bool = false) -> QuotaSnapshot {
-    QuotaSnapshot(schemaVersion: 1, collectedAt: previewDate.timeIntervalSince1970 - (stale ? 3600 : 120),
+    var snapshot = QuotaSnapshot(schemaVersion: 1, collectedAt: previewDate.timeIntervalSince1970 - (stale ? 3600 : 120),
         ordinaryUsageAllowed: nil, buckets: [QuotaBucket(limitId: "codex", limitName: "Codex",
             primary: weeklyOnly ? nil : QuotaWindow(usedPercent: low ? 93 : 8, windowDurationMins: 300, resetsAt: previewDate.timeIntervalSince1970 + 7200),
             secondary: QuotaWindow(usedPercent: low ? 82 : 32, windowDurationMins: 10080, resetsAt: previewDate.timeIntervalSince1970 + 86400))])
+    let start = previewDate.timeIntervalSince1970 - 22 * 3600
+    snapshot.usage = LocalUsage(periodStart: start, periodEnd: start + 86400, utcOffsetMinutes: 480,
+        inputTokens: 8_400_000, cachedInputTokens: 3_700_000, outputTokens: 6_200_000, totalTokens: 18_300_000,
+        hours: [], source: "local", partial: low, model: nil, reasoningEffort: nil, lastActivityAt: nil)
+    return snapshot
 }
 struct WidgetPreview: View {
     let dark: Bool
@@ -28,7 +33,7 @@ struct WidgetPreview: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("锁屏 · 矩形 / 圆形").font(.caption).foregroundStyle(.secondary)
                     HStack(spacing: 22) {
-                        RectangularQuotaView(snapshot: sample(), bucket: sample().buckets[0], date: previewDate)
+                        RectangularQuotaView(snapshot: sample(), bucket: sample().buckets[0], date: previewDate, showUsage: true)
                             .frame(width: 170, height: 72)
                         CircularQuotaView(snapshot: sample(), bucket: sample().buckets[0], date: previewDate, paired: true)
                             .frame(width: 64, height: 64)

@@ -57,7 +57,8 @@ struct QuotaSnapshot: Codable, Equatable, Sendable {
     }
     func transitionDates(after now: Date) -> [Date] {
         let resets = buckets.flatMap { [$0.primary?.resetsAt, $0.secondary?.resetsAt].compactMap { $0 } }
-        return Array(Set([collectedAt + Self.staleInterval] + resets))
+        let usageBoundary = usage.map { [$0.periodEnd] } ?? []
+        return Array(Set([collectedAt + Self.staleInterval] + resets + usageBoundary))
             .filter { $0 > now.timeIntervalSince1970 }
             .sorted().map { Date(timeIntervalSince1970: $0) }
     }
