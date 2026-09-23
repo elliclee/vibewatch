@@ -162,4 +162,4 @@ Apple 客户端测试、无签名编译与本地 Worker 测试见 [开发指南]
 
 欢迎提交 Issue 和 Pull Request，开始前请阅读 [贡献指南](CONTRIBUTING.md)。项目采用 [MIT License](LICENSE)。
 
-VibeWatch 是独立项目，与 OpenAI、Apple 或 Cloudflare 无隶属关系。需求研究参考了 [codex-quota-watch](https://github.com/paopaoxin/codex-quota-watch) 的公开产品展示；本仓库未复制其 AGPL 源码或素材。
+VibeWatch 是独立项目，与 OpenAI、Apple 或 Cloudflare 无隶属关系。
