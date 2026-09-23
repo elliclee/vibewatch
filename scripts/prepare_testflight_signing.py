@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """复用匹配本地私钥的分发证书，生成 VibeWatch 专用描述文件及导出选项。
 
-先在开发者门户关联 Watch / Widget 的 App Group，再运行本脚本。
+先在开发者门户关联四个目标的 App Group，再运行本脚本。
 不输出签名材料，不修改其他应用，不创建或撤销证书。
 """
 import base64
@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TEAM = os.environ.get("VIBEWATCH_TEAM_ID", "")
 PREFIX = os.environ.get("VIBEWATCH_BUNDLE_PREFIX", "dev.vibewatch")
 GROUP = os.environ.get("VIBEWATCH_APP_GROUP", f"group.{PREFIX}.shared")
-BUNDLES = [f"{PREFIX}.{suffix}" for suffix in ["phone", "phone.watch", "phone.watch.widgets"]]
+BUNDLES = [f"{PREFIX}.{suffix}" for suffix in ["phone", "phone.watch", "phone.watch.widgets", "phone.widgets"]]
 OUT = ROOT / "artifacts/testflight"
 
 
@@ -50,7 +50,7 @@ def valid_profile(payload, bundle, fingerprint):
             and not payload.get("ProvisionsAllDevices", False)
             and any(hashlib.sha1(c).hexdigest().upper() == fingerprint for c in payload.get("DeveloperCertificates", []))
             and (
-                (bundle == BUNDLES[0] or GROUP in ent.get("com.apple.security.application-groups", []))
+                GROUP in ent.get("com.apple.security.application-groups", [])
                 and f"{TEAM}.*" in ent.get("keychain-access-groups", [])))
 
 

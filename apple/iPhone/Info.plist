@@ -41,9 +41,11 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>VibeWatchAppGroup</key>
+	<string>$(VIBEWATCH_APP_GROUP)</string>
+	<key>VibeWatchKeychainGroup</key>
+	<string>$(VIBEWATCH_KEYCHAIN_GROUP)</string>
 	<key>VibeWatchLegacyKeychainGroup</key>
 	<string>$(AppIdentifierPrefix)$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>VibeWatchPrivatePhoneStorage</key>
-	<true/>
 </dict>
 </plist>

@@ -16,7 +16,7 @@
 
 ## 验证与发布
 
-额度和用量自动测试、默认三目标编译及真实汇总上传/鉴权读取已验证；详见 [验证范围](VALIDATION.md)。当前验证环境未安装 watchOS 模拟器运行时，源码预览使用示例数据和示意外框，不能替代实机验证。
+额度和用量自动测试、默认四目标编译及真实汇总上传/鉴权读取已验证；详见 [验证范围](VALIDATION.md)。当前验证环境未安装 watchOS 模拟器运行时，源码预览使用示例数据和示意外框，不能替代实机验证。
 
 预览生成：在仓库根目录执行：
 
@@ -27,4 +27,4 @@ swiftc -parse-as-library apple/Shared/Models.swift apple/Shared/WatchQuotaViews.
 
 输出 `artifacts/watch-preview/watch-dashboard.png`。
 
-默认三目标工程包含两页界面，手机小组件属于后续独立工作。构建见 BUILDING.md，统计接口见 contracts/README.md。
+默认四目标工程包含两页界面，手机小组件已纳入默认工程。构建见 BUILDING.md，统计接口见 contracts/README.md。

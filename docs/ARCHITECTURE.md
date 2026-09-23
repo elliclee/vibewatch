@@ -16,7 +16,7 @@ Workers 校验白名单、请求大小、时间范围、计数一致性和角色
 
 iPhone 管理配对与显示偏好，通过 WatchConnectivity 发送只读配置。Watch 配置写入共享 Keychain，缓存存入 App Group；同手表上的 Widget 读取相同存储。App Group 不负责跨设备同步。
 
-默认 iPhone App 使用私有 Keychain 与 Application Support 缓存，不需要手机 App Group。实验手机小组件方案会改用共享存储并执行一次性迁移，目前未启用。
+iPhone App 与手机小组件使用共享 Keychain 和 App Group 缓存。build 9 首次打开主 App 时迁移 build 8 及更早版本的私有配对与缓存，成功写入共享存储后才删除旧数据。只有主 App 执行迁移。
 
 Watch 与 Widget 分别通过 HTTPS 获取快照。缓存以服务器和设备身份隔离，禁止旧快照覆盖新快照，切换连接后拒绝旧请求写入。
 

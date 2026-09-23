@@ -7,7 +7,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    CURRENT_PROJECT_VERSION: 8
+    CURRENT_PROJECT_VERSION: 9
     MARKETING_VERSION: '0.1.0'
     CODE_SIGN_STYLE: Automatic
     VIBEWATCH_BUNDLE_PREFIX: dev.vibewatch
@@ -33,7 +33,8 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         ITSAppUsesNonExemptEncryption: false
-        VibeWatchPrivatePhoneStorage: true
+        VibeWatchAppGroup: $(VIBEWATCH_APP_GROUP)
+        VibeWatchKeychainGroup: $(VIBEWATCH_KEYCHAIN_GROUP)
         VibeWatchLegacyKeychainGroup: $(AppIdentifierPrefix)$(PRODUCT_BUNDLE_IDENTIFIER)
         NSCameraUsageDescription: 扫描 Mac 生成的一次性配对二维码。
         UILaunchScreen: {}
@@ -44,10 +45,43 @@ targets:
     entitlements:
       path: iPhone/VibeWatch.entitlements
       properties:
-        keychain-access-groups: [$(AppIdentifierPrefix)$(PRODUCT_BUNDLE_IDENTIFIER)]
+        com.apple.security.application-groups: [$(VIBEWATCH_APP_GROUP)]
+        keychain-access-groups: [$(AppIdentifierPrefix)$(PRODUCT_BUNDLE_IDENTIFIER), $(VIBEWATCH_KEYCHAIN_GROUP)]
     dependencies:
       - target: VibeWatchWatch
         embed: true
+      - target: VibeWatchPhoneWidgets
+        embed: true
+  VibeWatchPhoneWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Shared
+        excludes: [AppModel.swift, QuotaViews.swift]
+      - path: PhoneWidgets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(VIBEWATCH_BUNDLE_PREFIX).phone.widgets
+        PROVISIONING_PROFILE_SPECIFIER: $(VIBEWATCH_PHONE_WIDGET_PROFILE)
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+        TARGETED_DEVICE_FAMILY: '1'
+    info:
+      path: PhoneWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: VibeWatch
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ITSAppUsesNonExemptEncryption: false
+        VibeWatchAppGroup: $(VIBEWATCH_APP_GROUP)
+        VibeWatchKeychainGroup: $(VIBEWATCH_KEYCHAIN_GROUP)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: PhoneWidgets/VibeWatch.entitlements
+      properties:
+        com.apple.security.application-groups: [$(VIBEWATCH_APP_GROUP)]
+        keychain-access-groups: [$(VIBEWATCH_KEYCHAIN_GROUP)]
   VibeWatchWatch:
     type: application
     platform: watchOS

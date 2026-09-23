@@ -26,11 +26,10 @@ def run_logged(args, name):
 
 def verify_app(app, signing):
     apps = [app, app / "Watch/VibeWatchWatch.app",
-            app / "Watch/VibeWatchWatch.app/PlugIns/VibeWatchWidgets.appex"]
+            app / "Watch/VibeWatchWatch.app/PlugIns/VibeWatchWidgets.appex",
+            app / "PlugIns/VibeWatchPhoneWidgets.appex"]
     prefix = signing["bundlePrefix"]
-    expected = [f"{prefix}.{suffix}" for suffix in ["phone", "phone.watch", "phone.watch.widgets"]]
-    if (app / "PlugIns/VibeWatchPhoneWidgets.appex").exists():
-        raise RuntimeError("Phone widget must not be embedded in this release")
+    expected = [f"{prefix}.{suffix}" for suffix in ["phone", "phone.watch", "phone.watch.widgets", "phone.widgets"]]
     version = None
     for path, bundle in zip(apps, expected):
         info = plistlib.loads((path / "Info.plist").read_bytes())
@@ -58,15 +57,15 @@ def verify_app(app, signing):
         if payload["TeamIdentifier"] != [signing["team"]] or "ProvisionedDevices" in payload:
             raise RuntimeError(f"Unexpected distribution profile for {bundle}")
         if bundle == expected[0]:
-            if ent.get("com.apple.security.application-groups") or not info.get("VibeWatchPrivatePhoneStorage"):
-                raise RuntimeError("Phone must retain private storage in this release")
+            if info.get("VibeWatchPrivatePhoneStorage"):
+                raise RuntimeError("Phone must use shared storage for widgets")
             if f"{signing['team']}.{bundle}" not in ent.get("keychain-access-groups", []):
                 raise RuntimeError("Phone legacy Keychain group missing")
         group = signing["appGroup"]
         shared_keychain = f"{signing['team']}.{prefix}.shared"
-        if bundle != expected[0] and (group not in ent.get("com.apple.security.application-groups", []) or shared_keychain not in ent.get("keychain-access-groups", [])):
+        if (group not in ent.get("com.apple.security.application-groups", []) or shared_keychain not in ent.get("keychain-access-groups", [])):
             raise RuntimeError(f"Missing signed shared groups for {bundle}")
-        if bundle != expected[0] and group not in payload["Entitlements"].get("com.apple.security.application-groups", []):
+        if group not in payload["Entitlements"].get("com.apple.security.application-groups", []):
             raise RuntimeError(f"Profile does not permit shared group for {bundle}")
         if bundle == expected[1] and info.get("WKCompanionAppBundleIdentifier") != expected[0]:
             raise RuntimeError("Watch companion identifier mismatch")
@@ -91,8 +90,8 @@ def main():
              f"VIBEWATCH_BUNDLE_PREFIX={signing['bundlePrefix']}",
              f"VIBEWATCH_APP_GROUP={signing['appGroup']}",
              f"VIBEWATCH_KEYCHAIN_GROUP=$(AppIdentifierPrefix){signing['bundlePrefix']}.shared"]
-    for bundle, key in zip([f"{signing['bundlePrefix']}.{suffix}" for suffix in ["phone", "phone.watch", "phone.watch.widgets"]],
-                           ["PHONE", "WATCH", "WIDGET"]):
+    for bundle, key in zip([f"{signing['bundlePrefix']}.{suffix}" for suffix in ["phone", "phone.watch", "phone.watch.widgets", "phone.widgets"]],
+                           ["PHONE", "WATCH", "WIDGET", "PHONE_WIDGET"]):
         flags.append(f"VIBEWATCH_{key}_PROFILE={signing['profiles'][bundle]}")
     run_logged(cmd + [f"--xcodebuild-flag={flag}" for flag in flags], "archive")
     verify_app(archive / "Products/Applications/VibeWatch.app", signing)
@@ -103,7 +102,7 @@ def main():
             zipped.extractall(directory)
         version = verify_app(Path(directory) / "Payload/VibeWatch.app", signing)
     (OUT / "verified-build.json").write_text(json.dumps({"version": version[0], "build": version[1],
-        "bundles": 3, "ipa": str(ipa)}, indent=2))
+        "bundles": 4, "ipa": str(ipa)}, indent=2))
     if args.upload:
         run_logged(["bash", str(ROOT / "scripts/asc.sh"), "builds", "upload", "--app", os.environ["ASC_APP_ID"],
                     "--ipa", str(ipa)], "upload")

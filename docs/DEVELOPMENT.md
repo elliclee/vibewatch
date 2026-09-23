@@ -44,7 +44,7 @@ xcodebuild -project apple/VibeWatch.xcodeproj -scheme VibeWatchTests \
   -destination 'platform=iOS Simulator,name=iPhone 18 Pro' test
 ```
 
-默认三目标工程测试私有 iPhone 存储、配对兼容与 API 行为；手机共享存储迁移测试只在实验四目标工程中运行。普通 scheme 不运行独立 HTTP 集成测试。
+默认四目标工程测试共享缓存隔离、旧私有配对迁移、断开后不恢复旧配对与 API 行为。历史私有存储版本专用测试按配置跳过。普通 scheme 不运行独立 HTTP 集成测试。
 
 要运行 HTTP 测试，先启动合成数据服务：
 
@@ -75,4 +75,4 @@ swiftc -parse-as-library apple/Shared/Models.swift apple/Shared/WatchQuotaViews.
 - `apple/project.local.yml` 是个人标识配置，不提交。修改 Xcode UI 中的设置可能被再次生成覆盖。
 - `apple/*.xcodeproj`、`artifacts/`、`.wrangler/`、签名材料和 `.env` 均忽略。
 - 修改云端绑定后可在 cloud 目录运行 `npm run types`；生成结果不能依赖私有 `.dev.vars`。
-- 发布脚本默认只支持三目标正式构建，详见 [TESTFLIGHT.md](TESTFLIGHT.md)。
+- 发布脚本默认只支持四目标正式构建，详见 [TESTFLIGHT.md](TESTFLIGHT.md)。

@@ -25,14 +25,26 @@ class SigningConfigTests(unittest.TestCase):
     def valid(self, payload, bundle):
         return signing.valid_profile(payload, bundle, hashlib.sha1(b'synthetic-test-certificate').hexdigest().upper())
 
-    def test_custom_prefix_phone_uses_private_distribution_profile(self):
+    def test_custom_prefix_phone_requires_shared_distribution_profile(self):
         bundle = 'com.example.quota.phone'
         self.assertEqual(signing.BUNDLES[0], bundle)
-        self.assertTrue(self.valid(self.profile(bundle), bundle))
+        payload = self.profile(bundle)
+        self.assertFalse(self.valid(payload, bundle))
+        payload['Entitlements']['com.apple.security.application-groups'] = [signing.GROUP]
+        self.assertTrue(self.valid(payload, bundle))
 
     def test_watch_requires_own_app_group(self):
         bundle = signing.BUNDLES[1]
         payload = self.profile(bundle)
+        self.assertFalse(self.valid(payload, bundle))
+        payload['Entitlements']['com.apple.security.application-groups'] = [signing.GROUP]
+        self.assertTrue(self.valid(payload, bundle))
+
+    def test_phone_widget_requires_matching_group(self):
+        bundle = signing.BUNDLES[3]
+        self.assertEqual(bundle, 'com.example.quota.phone.widgets')
+        payload = self.profile(bundle)
+        payload['Entitlements']['com.apple.security.application-groups'] = ['group.other.shared']
         self.assertFalse(self.valid(payload, bundle))
         payload['Entitlements']['com.apple.security.application-groups'] = [signing.GROUP]
         self.assertTrue(self.valid(payload, bundle))

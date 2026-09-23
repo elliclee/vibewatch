@@ -14,9 +14,10 @@ import zipfile
 def package(archive: Path, output: Path):
     app = archive / 'Products/Applications/VibeWatch.app'
     bundles = [app, app / 'Watch/VibeWatchWatch.app',
-               app / 'Watch/VibeWatchWatch.app/PlugIns/VibeWatchWidgets.appex']
+               app / 'Watch/VibeWatchWatch.app/PlugIns/VibeWatchWidgets.appex',
+               app / 'PlugIns/VibeWatchPhoneWidgets.appex']
     metadata = []
-    for bundle, platform in zip(bundles, ['iPhoneOS', 'WatchOS', 'WatchOS']):
+    for bundle, platform in zip(bundles, ['iPhoneOS', 'WatchOS', 'WatchOS', 'iPhoneOS']):
         info = plistlib.loads((bundle / 'Info.plist').read_bytes())
         if info['CFBundleSupportedPlatforms'] != [platform]:
             raise ValueError(f'Not a device build: {bundle.name}')

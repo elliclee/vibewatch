@@ -20,7 +20,7 @@ VibeWatch 将 Mac 上的 Codex 额度同步到 iPhone 与 Apple Watch，提供�
 - **一次性配对**：iPhone 扫码或粘贴链接，通过 WatchConnectivity 向手表传递只读连接配置。
 - **真实状态**：保留缺失窗口、未知比例与过期提示；不会将缺少 5 小时限制误报为满额或无限。
 
-当前默认工程包含 **iPhone App、Watch App、Watch 表盘组件**。iPhone 桌面／锁屏小组件源码处于实验阶段，未加入默认构建，见 [手机小组件](docs/PHONE-WIDGETS.md)。
+当前默认工程包含 **iPhone App、iPhone 小组件、Watch App、Watch 表盘组件**。手机支持桌面小号／中号与锁屏矩形／圆形组件，升级后先打开一次主 App 完成配对迁移。见 [手机小组件](docs/PHONE-WIDGETS.md)。
 
 ## 工作方式
 
@@ -78,7 +78,7 @@ xcodegen generate --spec apple/project.local.yml
 open apple/VibeWatch.xcodeproj
 ```
 
-在开发者门户注册对应标识，并为 **Watch 与 Watch Widgets** 关联 `group.<你的前缀>.shared`。在 Xcode 选择自己的团队及真实 iPhone 运行；完整签名与安装流程见 **[Apple 构建指南](docs/BUILDING.md)**。
+在开发者门户注册对应标识，并为 **四个 App ID** 关联 `group.<你的前缀>.shared`。在 Xcode 选择自己的团队及真实 iPhone 运行；完整签名与安装流程见 **[Apple 构建指南](docs/BUILDING.md)**。
 
 ### 4. 配置采集并配对
 
@@ -110,10 +110,10 @@ apple/
   Watch/               手表入口与横向分页
   Widgets/             Watch 表盘组件
   Shared/              协议模型、存储、HTTP、时间线及 SwiftUI 视图
-  PhoneWidgets/        实验中的 iPhone 小组件（默认不构建）
+  PhoneWidgets/        iPhone 桌面与锁屏小组件
   Tests/               Swift 模型测试
   IntegrationTests/    Apple 客户端与 HTTP 集成测试
-  project.yml          默认三目标 XcodeGen 工程源
+  project.yml          默认四目标 XcodeGen 工程源
 cloud/
   src/                 Workers API、鉴权与快照校验
   migrations/          D1 数据库迁移

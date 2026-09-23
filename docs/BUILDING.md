@@ -1,6 +1,6 @@
 # Apple 客户端构建
 
-本文针对默认三目标工程：iPhone、Watch、Watch Widgets。推荐先完成 [云端部署](SETUP.md)，也可先构建并检查未配对界面。
+本文针对默认四目标工程：iPhone、Phone Widgets、Watch、Watch Widgets。推荐先完成 [云端部署](SETUP.md)，也可先构建并检查未配对界面。
 
 ## 工具链
 
@@ -28,21 +28,22 @@ open apple/VibeWatch.xcodeproj
 
 | Target | Bundle ID | App Group |
 | --- | --- | --- |
-| VibeWatch | `<前缀>.phone` | 不需要，使用私有存储 |
+| VibeWatch | `<前缀>.phone` | `group.<前缀>.shared` |
+| VibeWatchPhoneWidgets | `<前缀>.phone.widgets` | 与主 App 相同 |
 | VibeWatchWatch | `<前缀>.phone.watch` | `group.<前缀>.shared` |
 | VibeWatchWidgets | `<前缀>.phone.watch.widgets` | 与 Watch 相同 |
 
-Watch 与 Widgets 的共享 Keychain 组为 `$(AppIdentifierPrefix)<前缀>.shared`。AppIdentifierPrefix 由签名工具链展开，通常与 Team ID 相同；不要手写一个不属于自己团队的前缀。
+四个目标的共享 Keychain 组为 `$(AppIdentifierPrefix)<前缀>.shared`。AppIdentifierPrefix 由签名工具链展开，通常与 Team ID 相同；不要手写一个不属于自己团队的前缀。
 
 ## 开发者门户与签名
 
-1. 打开 Apple Developer → Certificates, Identifiers & Profiles → Identifiers，创建上表三个明确的 App IDs。
+1. 打开 Apple Developer → Certificates, Identifiers & Profiles → Identifiers，创建上表四个明确的 App IDs。
 2. 在 Identifiers 类型中切换到 App Groups，创建 `group.<前缀>.shared`。
-3. 分别打开 Watch 和 Widgets 的 App ID，启用 App Groups，Edit 中勾选该组，Continue 后还需点击页面 Save。
-4. 在 Xcode 为三个 target 选择同一团队，使用 Automatically manage signing。确认 Watch / Widgets 的 App Groups 与 Keychain Sharing 配置正确。
+3. 分别打开四个 App ID，启用 App Groups，Edit 中勾选该组，Continue 后还需点击页面 Save。
+4. 在 Xcode 为四个 target 选择同一团队，使用 Automatically manage signing。确认四个目标的 App Groups 与 Keychain Sharing 配置正确。
 5. 将 iPhone 连接到 Mac，确认信任关系，启用设备所要求的开发者模式。Apple Watch 需与该 iPhone 配对。
 
-需要能够配置 App Groups 的开发者账号。不要直接沿用仓库示例标识注册设备，也不要通过移除共享权限规避签名失败；Watch 与表盘组件实际需要共享存储。
+需要能够配置 App Groups 的开发者账号。不要直接沿用仓库示例标识注册设备，也不要通过移除共享权限规避签名失败；App 与对应组件实际需要共享存储。
 
 ## 安装与配对
 
@@ -64,6 +65,6 @@ xcodebuild -project apple/VibeWatch.xcodeproj -scheme VibeWatch \
   -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build
 ```
 
-使用自己的 Team 时，改用 `project.local.yml` 生成工程。默认工程不包含 iPhone 小组件。
+使用自己的 Team 时，改用 `project.local.yml` 生成工程。默认工程包含 iPhone 小组件。
 
 正式 TestFlight 分发见 [TESTFLIGHT.md](TESTFLIGHT.md)；重新签名 IPA 的限制见 [IPA-TESTING.md](IPA-TESTING.md)。
