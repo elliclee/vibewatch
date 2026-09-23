@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "collectedAt": 1789776000,
+  "ordinaryUsageAllowed": null,
+  "buckets": [
+    {
+      "limitId": "codex",
+      "limitName": "Codex",
+      "primary": { "usedPercent": 28, "windowDurationMins": 300, "resetsAt": 1789790400 },
+      "secondary": { "usedPercent": 61, "windowDurationMins": 10080, "resetsAt": 1790121600 }
+    },
+    { "limitId": "review", "limitName": "Code review", "primary": null, "secondary": null }
+  ]
+}

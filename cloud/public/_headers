@@ -1,0 +1,5 @@
+/downloads/*
+  Content-Type: application/octet-stream
+  Content-Disposition: attachment
+  X-Content-Type-Options: nosniff
+  Cache-Control: public, max-age=31536000, immutable
