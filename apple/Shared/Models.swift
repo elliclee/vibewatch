@@ -26,7 +26,10 @@ struct QuotaBucket: Codable, Identifiable, Equatable, Sendable {
     let primary: QuotaWindow?
     let secondary: QuotaWindow?
     var id: String { limitId }
-    var name: String { limitName ?? limitId }
+    var name: String {
+        let label = limitName ?? limitId
+        return label.lowercased() == "codex" ? "Codex" : label
+    }
     // Presence describes the payload, not a subscription's entitlement to unlimited usage.
     // Keep an existing window with unknown percentage; only absent windows are omitted.
     var displayWindow: QuotaWindow? { primary ?? secondary }
