@@ -3,6 +3,7 @@ import SwiftUI
 struct SegmentedQuotaBar: View {
     let remaining: Double?
     let tint: Color
+    var height: CGFloat = 10
     var body: some View {
         GeometryReader { proxy in
             HStack(spacing: 2) {
@@ -14,7 +15,7 @@ struct SegmentedQuotaBar: View {
                         }
                 }
             }.clipShape(RoundedRectangle(cornerRadius: 2))
-        }.frame(height: 10).accessibilityHidden(true)
+        }.frame(height: height).accessibilityHidden(true)
     }
 }
 

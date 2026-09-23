@@ -3,11 +3,11 @@ import AppKit
 import SwiftUI
 
 let previewDate = Date(timeIntervalSince1970: 1790000000)
-func sample(weeklyOnly: Bool = false, stale: Bool = false) -> QuotaSnapshot {
+func sample(weeklyOnly: Bool = false, stale: Bool = false, low: Bool = false) -> QuotaSnapshot {
     QuotaSnapshot(schemaVersion: 1, collectedAt: previewDate.timeIntervalSince1970 - (stale ? 3600 : 120),
         ordinaryUsageAllowed: nil, buckets: [QuotaBucket(limitId: "codex", limitName: "Codex",
-            primary: weeklyOnly ? nil : QuotaWindow(usedPercent: 28, windowDurationMins: 300, resetsAt: previewDate.timeIntervalSince1970 + 7200),
-            secondary: QuotaWindow(usedPercent: 61, windowDurationMins: 10080, resetsAt: previewDate.timeIntervalSince1970 + 86400))])
+            primary: weeklyOnly ? nil : QuotaWindow(usedPercent: low ? 93 : 8, windowDurationMins: 300, resetsAt: previewDate.timeIntervalSince1970 + 7200),
+            secondary: QuotaWindow(usedPercent: low ? 82 : 32, windowDurationMins: 10080, resetsAt: previewDate.timeIntervalSince1970 + 86400))])
 }
 struct WidgetPreview: View {
     let dark: Bool
@@ -21,6 +21,7 @@ struct WidgetPreview: View {
         VStack(alignment: .leading, spacing: 20) {
             Text("VibeWatch · iPhone 小组件").font(.system(size: 24, weight: .semibold))
             HStack(spacing: 20) { tile(sample(), compact: true); tile(sample(), compact: false) }
+            HStack(spacing: 20) { tile(sample(low: true), compact: true); tile(sample(low: true), compact: false) }
             HStack(spacing: 20) { tile(nil, compact: true); tile(sample(weeklyOnly: true), compact: false) }
             HStack(spacing: 20) {
                 tile(sample(stale: true), compact: true)

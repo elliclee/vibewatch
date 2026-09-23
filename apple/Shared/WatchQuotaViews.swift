@@ -6,7 +6,7 @@ enum QuotaAppearance {
         guard !stale, let remaining else { return .secondary }
         if remaining < 10 { return .red }
         if remaining < 20 { return .orange }
-        return secondary ? .cyan : .mint
+        return secondary ? .blue : .green
     }
     static func symbol(_ window: QuotaWindow?) -> String {
         (window?.windowDurationMins ?? 0) >= 1440 ? "calendar" : "clock"
@@ -159,7 +159,7 @@ struct RectangularQuotaView: View {
                 QuotaResetLabel(window: window, collectedAt: snapshot.collectedAt, date: date, compact: true)
                     .font(.system(size: 9)).foregroundStyle(.secondary)
             }.minimumScaleFactor(0.8)
-            QuotaBar(remaining: window?.remaining, tint: tint, height: 3)
+            SegmentedQuotaBar(remaining: window?.remaining, tint: tint, height: 3)
         }.accessibilityElement(children: .combine)
     }
 }

@@ -22,6 +22,8 @@ VibeWatch 将 Mac 上的 Codex 额度同步到 iPhone 与 Apple Watch，提供�
 
 当前默认工程包含 **iPhone App、iPhone 小组件、Watch App、Watch 表盘组件**。手机支持桌面小号／中号与锁屏矩形／圆形组件，升级后先打开一次主 App 完成配对迁移。见 [手机小组件](docs/PHONE-WIDGETS.md)。
 
+手机小组件的下一版排版预览见 [样式说明](docs/PHONE-WIDGETS.md#watch-风格排版下一版)。
+
 ## 工作方式
 
 ```mermaid
