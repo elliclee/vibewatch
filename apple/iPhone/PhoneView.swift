@@ -15,30 +15,8 @@ struct PhoneView: View {
                     if let envelope = model.envelope {
                         TimelineView(.periodic(from: .now, by: 30)) { context in
                             VStack(alignment: .leading, spacing: 20) {
-                                ForEach(envelope.snapshot.buckets) { bucket in
-                                    VStack(alignment: .leading, spacing: 12) {
-                                        Text(bucket.name).font(.title2.bold())
-                                        ViewThatFits(in: .horizontal) {
-                                            HStack(alignment: .top, spacing: 12) { cards(bucket, envelope.snapshot, context.date) }
-                                            VStack(spacing: 12) { cards(bucket, envelope.snapshot, context.date) }
-                                        }
-                                    }
-                                }
                                 SnapshotFooter(envelope: envelope, date: context.date)
-                            }
-                        }
-                        if model.connection != nil {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("表盘显示").font(.headline)
-                                Picker("额度类型", selection: Binding(get: { model.preferredBucket }, set: { model.selectBucket($0) })) {
-                                    Text("自动选择 Codex").tag("")
-                                    ForEach(envelope.snapshot.buckets) { Text($0.name).tag($0.limitId) }
-                                    if !model.preferredBucket.isEmpty && !envelope.snapshot.buckets.contains(where: { $0.limitId == model.preferredBucket }) {
-                                        Text("所选额度暂不可用").tag(model.preferredBucket)
-                                    }
-                                }.pickerStyle(.menu)
-                                Text("按实际额度窗口显示，圆形组件会标注窗口时长。时间由系统表盘显示。")
-                                    .font(.caption).foregroundStyle(.secondary)
+                                PhoneDashboard(snapshot: envelope.snapshot, date: context.date)
                             }
                         }
                     } else if model.connection != nil {
@@ -64,16 +42,33 @@ struct PhoneView: View {
                             Button("使用配对链接") { prepare(link) }.disabled(link.isEmpty || model.isRefreshing)
                         }
                     } else if model.connection != nil {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Label(model.watchStatus, systemImage: "applewatch")
-                            Button("再次同步手表配置") { model.synchronizeWatch() }
-                            Text(model.connection?.server.host ?? "").font(.caption).foregroundStyle(.secondary)
-                            Button("断开此设备", role: .destructive) { showingDisconnect = true }
-                        }.font(.subheadline)
+                        DisclosureGroup("手表与小组件设置") {
+                            VStack(alignment: .leading, spacing: 16) {
+                                if let envelope = model.envelope {
+                                    Picker("额度类型", selection: Binding(get: { model.preferredBucket }, set: { model.selectBucket($0) })) {
+                                        Text("自动选择 Codex").tag("")
+                                        ForEach(envelope.snapshot.buckets) { Text($0.name).tag($0.limitId) }
+                                        if !model.preferredBucket.isEmpty && !envelope.snapshot.buckets.contains(where: { $0.limitId == model.preferredBucket }) {
+                                            Text("所选额度暂不可用").tag(model.preferredBucket)
+                                        }
+                                    }.pickerStyle(.menu)
+                                    Text("表盘与小组件按实际额度窗口显示，圆形组件会标注窗口时长。")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }
+                                Divider()
+                                Label(model.watchStatus, systemImage: "applewatch")
+                                Button("再次同步手表配置") { model.synchronizeWatch() }
+                                    .buttonStyle(.bordered).controlSize(.regular)
+                                Text(model.connection?.server.host ?? "").font(.caption).foregroundStyle(.secondary)
+                                Button("断开此设备", role: .destructive) { showingDisconnect = true }
+                                    .frame(minHeight: 44)
+                            }.font(.subheadline).padding(.top, 16)
+                        }.font(.headline).dashboardPanel()
                     }
                 }.padding(20)
             }
             .navigationTitle("VibeWatch")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if model.connection != nil {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -120,17 +115,6 @@ struct PhoneView: View {
                 else { prepare(url.absoluteString) }
             }
         }.tint(.mint)
-    }
-    @ViewBuilder private func cards(_ bucket: QuotaBucket, _ snapshot: QuotaSnapshot, _ date: Date) -> some View {
-        if let primary = bucket.primary {
-            WindowCard(title: "主窗口", window: primary, collectedAt: snapshot.collectedAt, date: date).frame(minWidth: 140)
-        }
-        if let secondary = bucket.secondary {
-            WindowCard(title: "次窗口", window: secondary, collectedAt: snapshot.collectedAt, date: date).frame(minWidth: 140)
-        }
-        if bucket.displayWindow == nil {
-            Text("暂无额度数据").font(.callout).foregroundStyle(.secondary)
-        }
     }
     private func prepare(_ value: String) {
         do { pendingPairing = try PairingRequest(link: value) }
